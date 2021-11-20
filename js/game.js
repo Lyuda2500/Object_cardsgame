@@ -66,7 +66,6 @@ var BootScene = new Phaser.Class({
   },
 
   preload: function () {
-    // здесь будет загрузка ресурсов
     // загрузка изображений
     this.load.atlas("placeholder", "assets/cards/placeholder.png", "assets/cards/placeholder_atlas.json");
     this.load.image("card_shirt", "assets/cards/card_shirt.png");
@@ -87,7 +86,6 @@ var WorldScene = new Phaser.Class({
   preload: function () {},
 
   create: function () {
-    // // фон
     // this.add.sprite(0, 0, "background");
     this.placehold = [];
     this.shirt = [];
@@ -111,71 +109,98 @@ var WorldScene = new Phaser.Class({
     this.placehold.push(this.add.sprite(1060, 378, "placeholder", "placeholder_14")); //*/
 
     //vykladka rubashki
-    // this.shirt.push(this.add.sprite(100, 150, "card_shirt"));
-    // this.shirt[0].setDepth(1);
-    // this.shirt[0].setInteractive();
+    /*this.shirt.push(this.add.sprite(100, 150, "card_shirt"));
+    this.shirt[0].setDepth(1);
+    this.shirt[0].setInteractive();//*/
 
-    //Sozdanie peremeshanoy kolody kart
-    // cards(); //(crd[])
-    // for (let i = 0; i <= crd.length - 1; i++) {
-    //   this.deck.push(this.add.sprite(x1, y1, "cards", crd[i]));
-    //   this.deck[i].enabled = true;
-    //   this.deck[i].setInteractive();
-    //   this.deck[i].name = crd[i];
-    //   this.deck[i].suit = take_suit(crd[i]);
-    //   this.deck[i].color = red_or_black(crd[i]);
-    //   this.deck[i].value = weight(crd[i]);
-    //   this.deck[i].pl = -1; //startovyj verhnij levyj placeholder (-1)
-    //   this.deck[i].on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-    //     console.log(this);
-    //   });
-    // }
+    // Sozdanie peremeshanoy kolody kart
+    cards(); //(crd[])
+    for (let i = 0; i <= crd.length - 1; i++) {
+      this.deck.push(this.add.sprite(x1, y1, "cards", crd[i]));
+      this.deck[i].enabled = true;
+      this.deck[i].setInteractive();
+      this.deck[i].name = crd[i];
+      this.deck[i].suit = take_suit(crd[i]);
+      this.deck[i].color = red_or_black(crd[i]);
+      this.deck[i].value = weight(crd[i]);
+      this.deck[i].pl = -1; //startovyj verhnij levyj placeholder (-1)
+      this.deck[i].on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+        console.log(this.deck[this.deck.length - 1].suit);
+      });
+    }
+    this.input.on("pointerdown", this.startDrag, this);
+  }, //End of create:
+
+  startDrag(pointer, targets) {
+    this.dragObj = targets[0];
+    console.log("Start-befor");
+    if (this.dragObj instanceof Phaser.GameObjects.Sprite) {
+      this.input.off("pointerdown", this.startDrag, this);
+      console.log("Start");
+      // this.dragObj.startX = this.dragObj.x;
+      // this.dragObj.startY = this.dragObj.y;
+
+      for (var i = 0; i < this.deck.length - 1; i++) {
+        this.deck[i].setDepth(0);
+      }
+      //this.dragObj.toplist = toplist;
+      this.dragObj.setDepth(1);
+      // if (this.dragObj.toplist.length > 0) {
+      //   for (var i = 0; i < this.dragObj.toplist.length; i++) {
+      //     this.deck[this.dragObj.toplist[i].idx].setDepth(i + 2);
+      //   }
+      // }
+      // if (!(pointer.y < 253 && pointer.x > 29 && pointer.x < 171)) this.input.on("pointermove", this.doDrag, this);
+      //       this.input.on("pointerup", this.stopDrag, this);
+
+      this.input.on("pointermove", this.doDrag, this);
+      this.input.on("pointerup", this.stopDrag, this);
+    } else {
+      this.input.on("pointerdown", this.startDrag, this);
+    }
   },
-  // startDrag = function (pointer, targets) {
-  //   this.dragObj = targets[0];
+  doDrag(pointer) {
+    //if ( getClass(this.dragObj) == 'Object') {
+    // if (this.dragObj instanceof Phaser.GameObjects.Sprite) {
+    this.dragObj.x = pointer.x;
+    this.dragObj.y = pointer.y;
+    //  if ( this.dragObj.toplist.length > 0 ) {
+    //        for(let i=0; i < this.dragObj.toplist.length; i++) {
+    //           this.deck[this.dragObj.toplist[i].idx].x = pointer.x;
+    //           this.deck[this.dragObj.toplist[i].idx].y = pointer.y + ((i+1)*20);
+    //        }
+    //  }
+    //}
+  },
 
-  //   if (this.dragObj instanceof Phaser.GameObjects.Sprite) {
-  //     if (this.dragObj.name != 'shirt' && this.dragObj.name != 'park1') {
-  //       this.input.off('pointerdown', this.startDrag, this);
-  //       var toplist = this.getListTopCards(this.dragObj);
-  //       for (var i = 0; i < this.deck.length; i++) {
-  //         this.deck[i].setDepth(0);
-  //       }
-  //       this.dragObj.toplist = toplist;
-  //       this.dragObj.setDepth(1);
-  //       if (this.dragObj.toplist.length > 0) {
-  //         for (var i = 0; i < this.dragObj.toplist.length; i++) {
-  //           this.deck[this.dragObj.toplist[i].idx].setDepth(i + 2);
-  //         }
-  //       }
-  //       this.dragObj.startX = this.dragObj.x;
-  //       this.dragObj.startY = this.dragObj.y;
-  //       this.input.on('pointermove', this.doDrag, this);
-  //       this.input.on('pointerup', this.stopDrag, this);
-  //     }
-  //   } else {
-  //     this.input.on('pointerdown', this.startDrag, this);
-  //   }
-  // },
+  stopDrag(pointer) {
+    // function, kotoraja vypolnyaetcya, kogda otpuskaesh knopku myshy pri peretaskivanii
+    this.input.on("pointerdown", this.startDrag, this);
+    this.input.off("pointermove", this.doDrag, this);
+    this.input.off("pointerup", this.stopDrag, this);
+    this.dragObj.setDepth(0);
+    this.dragObj.x = pointer.x;
+    this.dragObj.y = pointer.y;
+    //this.dropped = {cardObj: this.dragObj, x: pointer.x, y: pointer.y}; // bad idea
+    //this.dropCard(this.dragObj, pointer.x, pointer.y);
+  },
 });
-// конфигурация нашей игры
 
-let config = {
-  type: Phaser.AUTO, // Phaser сам решает как визуализировать нашу игру (WebGL или Canvas)
-  width: 1280, // ширина игры
-  height: 720, // высота игры
-  backgroundColor: "#279732",
-  scene: gameScene, // наша созданная выше сцена
+var config = {
+  type: Phaser.AUTO,
+  parent: "content",
+  width: 1280,
+  height: 720,
+  backgroundColor: "#007700",
   zoom: 1,
   pixelArt: true,
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 0 },
+      gravity: { y: 400 },
     },
   },
   scene: [BootScene, WorldScene],
 };
 
-// создаем игру и передам ей конфигурацию
-let game = new Phaser.Game(config);
+var game = new Phaser.Game(config);
